@@ -1,3 +1,1 @@
-# gvl_ompl_smc_gpu_voxel
-# gpu-voxel-collision
-# gpu-voxles-panda
+# panda_pybullet_with_ros
