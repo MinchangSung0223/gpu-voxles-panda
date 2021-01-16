@@ -42,7 +42,7 @@ using namespace std;
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
 
-float temp_joint_value[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
+float temp_joint_value[7] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 int delay_tag = 0;
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
@@ -73,9 +73,9 @@ int main(int argc, char **argv)
     PERF_MON_ENABLE("planning");
 
     // construct the state space we are planning in
-    auto space(std::make_shared<ob::RealVectorStateSpace>(6));
+    auto space(std::make_shared<ob::RealVectorStateSpace>(7));
     //We then set the bounds for the R3 component of this state space:
-    ob::RealVectorBounds bounds(6);
+    ob::RealVectorBounds bounds(7);
     bounds.setLow(-3.14159265);
     bounds.setHigh(3.14159265);
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     std::cout<<"temp joint 3: "<<temp_joint_value[3]<<std::endl;
     std::cout<<"temp joint 4: "<<temp_joint_value[4]<<std::endl;
     std::cout<<"temp joint 5: "<<temp_joint_value[5]<<std::endl;
-
+    std::cout<<"temp joint 6: "<<temp_joint_value[6]<<std::endl;
     //Create a random start state:
     ob::ScopedState<> start(space);
     start[0] = temp_joint_value[0];
@@ -114,6 +114,8 @@ int main(int argc, char **argv)
     start[3] = temp_joint_value[3];
     start[4] = temp_joint_value[4];
     start[5] = temp_joint_value[5];
+    start[6] = temp_joint_value[6];
+
     //And a random goal state:
     ob::ScopedState<> goal(space);
     goal[0] = 0.0;
@@ -122,7 +124,7 @@ int main(int argc, char **argv)
     goal[3] = 0;
     goal[4] = 0;
     goal[5] = 0;
-
+    goal[6] = 0;
     my_class_ptr->insertStartAndGoal(start, goal);
     my_class_ptr->doVis();
 
@@ -189,12 +191,12 @@ int main(int argc, char **argv)
     PERF_MON_SUMMARY_PREFIX_INFO("planning");
 
     // keep the visualization running:
-    t1.join();
+
     while(true)
     {
         my_class_ptr->doVis();
         usleep(30000);
     }
-
+    t1.join();
     return 1;
 }

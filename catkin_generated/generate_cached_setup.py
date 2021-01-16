@@ -19,9 +19,9 @@ except ImportError:
             break
     from catkin.environment_cache import generate_environment_script
 
-code = generate_environment_script('/home/sung/workspace/gpu-voxels/gvl_ompl_planning/devel/env.sh')
+code = generate_environment_script('/home/sung/workspace/gpu-voxels/build/gpu-voxel-collision/devel/env.sh')
 
-output_filename = '/home/sung/workspace/gpu-voxels/gvl_ompl_planning/catkin_generated/setup_cached.sh'
+output_filename = '/home/sung/workspace/gpu-voxels/build/gpu-voxel-collision/catkin_generated/setup_cached.sh'
 with open(output_filename, 'w') as f:
     # print('Generate script for cached setup "%s"' % output_filename)
     f.write('\n'.join(code))

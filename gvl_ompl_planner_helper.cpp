@@ -66,7 +66,7 @@ GvlOmplPlannerHelper::GvlOmplPlannerHelper(const ob::SpaceInformationPtr &si)
     gvl->addMap(MT_BITVECTOR_VOXELLIST,"mySolutionMap");
     //gvl->addMap(MT_PROBAB_VOXELMAP,"myQueryMap");
 
-    gvl->addRobot("myUrdfRobot", "indy7_coarse/indy7_ros.urdf", true);
+    gvl->addRobot("myUrdfRobot", "panda_coarse/panda.urdf", true);
 
     //gvl->visualizeMap("myEnvironmentMap");
 
@@ -127,13 +127,13 @@ void GvlOmplPlannerHelper::visualizeSolution(ob::PathPtr path)
         const double *values = solution->getState(step)->as<ob::RealVectorStateSpace::StateType>()->values;
 
         robot::JointValueMap state_joint_values;
-        state_joint_values["joint0"] = values[0];
-        state_joint_values["joint1"] = values[1];
-        state_joint_values["joint2"] = values[2];
-        state_joint_values["joint3"] = values[3];
-        state_joint_values["joint4"] = values[4];
-        state_joint_values["joint5"] = values[5];
-
+        state_joint_values["panda_joint1"] = values[0];
+        state_joint_values["panda_joint2"] = values[1];
+        state_joint_values["panda_joint3"] = values[2];
+        state_joint_values["panda_joint4"] = values[3];
+        state_joint_values["panda_joint5"] = values[4];
+        state_joint_values["panda_joint6"] = values[5];
+        state_joint_values["panda_joint7"] = values[6];
         // update the robot joints:
         gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);
         // insert the robot into the map:
@@ -148,7 +148,7 @@ void roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 {
   static float x(0.0);
   gvl->clearMap("myEnvironmentMap");
-  
+
   std::vector<Vector3f> point_data;
   point_data.resize(msg->points.size());
 
@@ -174,13 +174,16 @@ void roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
-  //std::cout << "Got JointStateMessage" << std::endl;
+
+  std::cout << "Got JointStateMessage" << std::endl;
   gvl->clearMap("myRobotMap");
 
   for(size_t i = 0; i < msg->name.size(); i++)
   {
     myRobotJointValues[msg->name[i]] = msg->position[i];
+    
   }
+
   // update the robot joints:
   gvl->setRobotConfiguration("myUrdfRobot", myRobotJointValues);
   // insert the robot into the map:
@@ -215,15 +218,15 @@ void GvlOmplPlannerHelper::rosIter(){
     icl_core::config::addParameter(erode_threshold_parameter);
     voxel_side_length = icl_core::config::paramOptDefault<float>("voxel_side_length", 0.01f);
 
-    const Vector3f camera_offsets(1.5f+0.89f, 1.5f-0.08f, 1.30f); 
-    float roll = icl_core::config::paramOptDefault<float>("roll", -135.0f) * 3.141592f / 180.0f;
+    const Vector3f camera_offsets(1.0f, 1.0f, 0.2f); 
+    float roll = icl_core::config::paramOptDefault<float>("roll", 0.0f) * 3.141592f / 180.0f;
     float pitch = icl_core::config::paramOptDefault<float>("pitch", 0.0f) * 3.141592f / 180.0f;
-    float yaw = icl_core::config::paramOptDefault<float>("yaw", 90.0f) * 3.141592f / 180.0f;
+    float yaw = icl_core::config::paramOptDefault<float>("yaw", 0.0f) * 3.141592f / 180.0f;
     tf = Matrix4f::createFromRotationAndTranslation(Matrix3f::createFromRPY(0+roll, 0 + pitch, 0 + yaw), camera_offsets);
     
 
 
-    std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points");
+    std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/point_cloud2");
     int argc;
     char **argv;
     ros::init(argc, argv, "distance_ros_demo");
@@ -283,7 +286,6 @@ void GvlOmplPlannerHelper::rosIter(){
            gvl->visualizeMap("countingVoxelList");
            num_colls = gvl->getMap("countingVoxelList")->as<gpu_voxels::voxellist::CountingVoxelList>()->collideWith(gvl->getMap("mySolutionMap")->as<gpu_voxels::voxellist::BitVectorVoxelList>(), 1.0f);
            num_colls2 = gvl->getMap("countingVoxelList")->as<gpu_voxels::voxellist::CountingVoxelList>()->collideWith(gvl->getMap("myRobotMap")->as<gpu_voxels::voxellist::BitVectorVoxelList>(), 1.0f); 
-           if(num_colls-num_colls2>=180)
                  std::cout << "!!!!!!!!!!!!!!!Detected Collision!!!!!!!!! " << num_colls-num_colls2 << " collisions " << std::endl;
            
       }
@@ -298,24 +300,24 @@ void GvlOmplPlannerHelper::insertStartAndGoal(const ompl::base::ScopedState<> &s
     gvl->clearMap("myQueryMap");
 
     robot::JointValueMap state_joint_values;
-    state_joint_values["joint0"] = start[0];
-    state_joint_values["joint1"] = start[1];
-    state_joint_values["joint2"] = start[2];
-    state_joint_values["joint3"] = start[3];
-    state_joint_values["joint4"] = start[4];
-    state_joint_values["joint5"] = start[5];
-
+    state_joint_values["panda_joint1"] = start[0];
+    state_joint_values["panda_joint2"] = start[1];
+    state_joint_values["panda_joint3"] = start[2];
+    state_joint_values["panda_joint4"] = start[3];
+    state_joint_values["panda_joint5"] = start[4];
+    state_joint_values["panda_joint6"] = start[5];
+    state_joint_values["panda_joint7"] = start[6];
     // update the robot joints:
     gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);
     gvl->insertRobotIntoMap("myUrdfRobot", "myQueryMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START));
 
-    state_joint_values["joint0"] = goal[0];
-    state_joint_values["joint1"] = goal[1];
-    state_joint_values["joint2"] = goal[2];
-    state_joint_values["joint3"] = goal[3];
-    state_joint_values["joint4"] = goal[4];
-    state_joint_values["joint5"] = goal[5];
-
+    state_joint_values["panda_joint1"] = goal[0];
+    state_joint_values["panda_joint2"] = goal[1];
+    state_joint_values["panda_joint3"] = goal[2];
+    state_joint_values["panda_joint4"] = goal[3];
+    state_joint_values["panda_joint5"] = goal[4];
+    state_joint_values["panda_joint6"] = goal[5];
+    state_joint_values["panda_joint7"] = goal[6];
     // update the robot joints:
     gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);
     gvl->insertRobotIntoMap("myUrdfRobot", "myQueryMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+1));
@@ -334,13 +336,13 @@ bool GvlOmplPlannerHelper::isValid(const ompl::base::State *state) const
     const double *values = state->as<ob::RealVectorStateSpace::StateType>()->values;
 
     robot::JointValueMap state_joint_values;
-    state_joint_values["joint0"] = values[0];
-    state_joint_values["joint1"] = values[1];
-    state_joint_values["joint2"] = values[2];
-    state_joint_values["joint3"] = values[3];
-    state_joint_values["joint4"] = values[4];
-    state_joint_values["joint5"] = values[5];
-
+    state_joint_values["panda_joint1"] = values[0];
+    state_joint_values["panda_joint2"] = values[1];
+    state_joint_values["panda_joint3"] = values[2];
+    state_joint_values["panda_joint4"] = values[3];
+    state_joint_values["panda_joint5"] = values[4];
+    state_joint_values["panda_joint6"] = values[5];
+    state_joint_values["panda_joint7"] = values[6];
     // update the robot joints:
     gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);
     // insert the robot into the map:
@@ -459,12 +461,13 @@ bool GvlOmplPlannerHelper::checkMotion(const ompl::base::State *s1, const ompl::
             const double *values = test->as<ob::RealVectorStateSpace::StateType>()->values;
 
             robot::JointValueMap state_joint_values;
-            state_joint_values["joint0"] = values[0];
-            state_joint_values["joint1"] = values[1];
-            state_joint_values["joint2"] = values[2];
-            state_joint_values["joint3"] = values[3];
-            state_joint_values["joint4"] = values[4];
-            state_joint_values["joint5"] = values[5];
+            state_joint_values["panda_joint1"] = values[0];
+            state_joint_values["panda_joint2"] = values[1];
+            state_joint_values["panda_joint3"] = values[2];
+            state_joint_values["panda_joint4"] = values[3];
+            state_joint_values["panda_joint5"] = values[4];
+            state_joint_values["panda_joint6"] = values[5];
+            state_joint_values["panda_joint7"] = values[6];
 
             // update the robot joints:
             gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);

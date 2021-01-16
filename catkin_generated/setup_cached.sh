@@ -7,6 +7,6 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/sung/workspace/gpu-voxels/gvl_ompl_planning/devel:$CMAKE_PREFIX_PATH"
-export ROSLISP_PACKAGE_DIRECTORIES="/home/sung/workspace/gpu-voxels/gvl_ompl_planning/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
-export ROS_PACKAGE_PATH="/home/sung/workspace/gpu-voxels/gvl_ompl_planning:$ROS_PACKAGE_PATH"
+export CMAKE_PREFIX_PATH="/home/sung/workspace/gpu-voxels/build/gpu-voxel-collision/devel:$CMAKE_PREFIX_PATH"
+export ROSLISP_PACKAGE_DIRECTORIES="/home/sung/workspace/gpu-voxels/build/gpu-voxel-collision/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
+export ROS_PACKAGE_PATH="/home/sung/workspace/gpu-voxels/gvl_ompl_planning:/home/sung/workspace/gpu-voxels/build/gpu-voxel-collision:$ROS_PACKAGE_PATH"

@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/sung/workspace/gpu-voxels/gvl_ompl_planning/devel/setup.sh
+    local-name: /home/sung/workspace/gpu-voxels/build/gpu-voxel-collision/devel/setup.sh
